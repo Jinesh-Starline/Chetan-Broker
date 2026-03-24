@@ -67,32 +67,52 @@
 
                     <!-- Title -->
                     <TextBlock Text="Menu"
-                   Foreground="White"
-                   FontSize="16"
-                   FontWeight="Bold"
-                   Margin="0,0,0,20"/>
+                        Foreground="White"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        Margin="0,0,0,20"/>
 
+                    <Button Content="Home"
+                        Height="40"
+                        Margin="0,5"
+                        Background="Transparent"
+                        Foreground="White"
+                        x:Name="btnHome"
+                        BorderBrush="#3E3E42"
+                        BorderThickness="1"
+                        Click="ShowHome_Click"/>
+                    
                     <!-- Party -->
                     <Button Content="Party"
-                Height="40"
-                Margin="0,5"
-                Background="Transparent"
-                Foreground="White"
-                x:Name="btnParty" 
-                BorderBrush="#3E3E42"
-                BorderThickness="1"
-                Click="ShowParty_Click"/>
+                        Height="40"
+                        Margin="0,5"
+                        Background="Transparent"
+                        Foreground="White"
+                        x:Name="btnParty" 
+                        BorderBrush="#3E3E42"
+                        BorderThickness="1"
+                        Click="ShowParty_Click"/>
 
                     <!-- Transaction -->
                     <Button Content="Transaction"
-                Height="40"
-                Margin="0,5"
-                Background="Transparent"
-                x:Name="btnTransaction" 
-                Foreground="White"
-                BorderBrush="#3E3E42"
-                BorderThickness="1"
-                Click="ShowTransaction_Click"/>
+                        Height="40"
+                        Margin="0,5"
+                        Background="Transparent"
+                        x:Name="btnTransaction" 
+                        Foreground="White"
+                        BorderBrush="#3E3E42"
+                        BorderThickness="1"
+                        Click="ShowTransaction_Click"/>
+
+                    <Button Content="Reports"
+                        Height="40"
+                        Margin="0,5"
+                        Background="Transparent"
+                        Foreground="White"
+                        x:Name="btnReports"
+                        BorderBrush="#3E3E42"
+                        BorderThickness="1"
+                        Click="ShowReports_Click"/>
 
                 </StackPanel>
 

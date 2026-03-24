@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="Chetan_Broker.Controls.HomeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:oxy="http://oxyplot.org/wpf">
+
+    <Grid Margin="20">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Chart 1 -->
+        <Border Grid.Row="0" Margin="0,0,0,10" Padding="10" BorderBrush="#DDD" BorderThickness="1">
+            <oxy:PlotView Model="{Binding AmountModel}" />
+        </Border>
+
+        <!-- Chart 2 -->
+        <Border Grid.Row="1" Padding="10" BorderBrush="#DDD" BorderThickness="1">
+            <oxy:PlotView Grid.Row="1" Model="{Binding BrokerageModel}" />
+        </Border>
+
+    </Grid>
+</UserControl>

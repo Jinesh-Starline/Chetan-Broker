@@ -1,10 +1,6 @@
 ﻿using Chetan_Broker.Data;
 using Dapper;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Chetan_Broker.Services
@@ -13,61 +9,121 @@ namespace Chetan_Broker.Services
     {
         public bool Validate(string username, string password)
         {
-            using var conn = DbHelper.GetConnection();
-            conn.Open();
+            try
+            {
+                using var conn = DbHelper.GetConnection();
+                conn.Open();
 
-            var user = conn.QueryFirstOrDefault<string>(
-                "SELECT PasswordHash FROM User WHERE Username = @Username",
-                new { Username = username });
+                var user = conn.QueryFirstOrDefault<string>(
+                    "SELECT PasswordHash FROM User WHERE Username = @Username",
+                    new { Username = username });
 
-            if (user == null)
+                if (user == null)
+                    return false;
+
+                return SecurityHelper.VerifyPassword(password, user);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error validating user.\n\n{ex.Message}",
+                    "Authentication Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
                 return false;
-
-            return SecurityHelper.VerifyPassword(password, user);
+            }
         }
 
         public bool ChangePassword(string username, string oldPassword, string newPassword)
         {
-            using var conn = DbHelper.GetConnection();
-            conn.Open();
+            try
+            {
+                using var conn = DbHelper.GetConnection();
+                conn.Open();
 
-            var current = conn.QueryFirstOrDefault<string>(
-                "SELECT PasswordHash FROM User WHERE Username = @Username",
-                new { Username = username });
+                var current = conn.QueryFirstOrDefault<string>(
+                    "SELECT PasswordHash FROM User WHERE Username = @Username",
+                    new { Username = username });
 
-            if (current == null || !SecurityHelper.VerifyPassword(oldPassword,current))
+                if (current == null || !SecurityHelper.VerifyPassword(oldPassword, current))
+                    return false;
+
+                var passwordHash = SecurityHelper.HashPassword(newPassword);
+
+                if (string.IsNullOrEmpty(passwordHash))
+                {
+                    MessageBox.Show(
+                        "Failed to generate password hash.",
+                        "Security Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                    return false;
+                }
+
+                conn.Execute(
+                    "UPDATE User SET PasswordHash = @Password WHERE Username = @Username",
+                    new { Password = passwordHash, Username = username });
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error changing password.\n\n{ex.Message}",
+                    "Database Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
                 return false;
-
-            var passwordHash = SecurityHelper.HashPassword(newPassword);
-
-            conn.Execute(
-                "UPDATE User SET PasswordHash = @Password WHERE Username = @Username",
-                new { Password = passwordHash, Username = username });
-
-            return true;
+            }
         }
 
         public void SetAutoLogin(string username, bool isAuto)
         {
-            using var conn = DbHelper.GetConnection();
-            conn.Open();
+            try
+            {
+                using var conn = DbHelper.GetConnection();
+                conn.Open();
 
-            conn.Execute(
-                "UPDATE User SET AutoLogin = @AutoLogin WHERE Username = @Username",
-                new
-                {
-                    AutoLogin = isAuto ? 1 : 0,
-                    Username = username
-                });
+                conn.Execute(
+                    "UPDATE User SET AutoLogin = @AutoLogin WHERE Username = @Username",
+                    new
+                    {
+                        AutoLogin = isAuto ? 1 : 0,
+                        Username = username
+                    });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error updating auto-login setting.\n\n{ex.Message}",
+                    "Database Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         public string GetAutoLoginUser()
         {
-            using var conn = DbHelper.GetConnection();
-            conn.Open();
+            try
+            {
+                using var conn = DbHelper.GetConnection();
+                conn.Open();
 
-            return conn.QueryFirstOrDefault<string>(
-                "SELECT Username FROM User WHERE AutoLogin = 1 LIMIT 1");
+                return conn.QueryFirstOrDefault<string>(
+                    "SELECT Username FROM User WHERE AutoLogin = 1 LIMIT 1");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error fetching auto-login user.\n\n{ex.Message}",
+                    "Database Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+
+                return null;
+            }
         }
     }
 }

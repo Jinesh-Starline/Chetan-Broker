@@ -1,29 +1,17 @@
 ﻿using Chetan_Broker.Models;
 using Chetan_Broker.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace Chetan_Broker.Controls
 {
-    /// <summary>
-    /// Interaction logic for PartyView.xaml
-    /// </summary>
     public partial class PartyView : UserControl
     {
         private PartyService _partyService = new PartyService();
+        private BrokrageAccountService _brokerService = new BrokrageAccountService();
         private Party _selectedParty;
+
         public PartyView()
         {
             InitializeComponent();
@@ -32,81 +20,163 @@ namespace Chetan_Broker.Controls
 
         private void LoadParties()
         {
-            lstParties.ItemsSource = _partyService.GetAll();
+            try
+            {
+                lstParties.ItemsSource = _partyService.GetAll();
+                cmbBrokerAccount.ItemsSource = _brokerService.GetAll();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading data:\n{ex.Message}","Problem",MessageBoxButton.OK,MessageBoxImage.Information);
+            }
         }
 
         private void AddParty_Click(object sender, RoutedEventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtPartyName.Text))
-                return;
+            try
+            {
+                if (string.IsNullOrWhiteSpace(txtPartyName.Text))
+                {
+                    MessageBox.Show("Enter party name", "Problem", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
 
-            _partyService.Add(txtPartyName.Text);
-            txtPartyName.Clear();
+                if (string.IsNullOrWhiteSpace(txtCity.Text))
+                {
+                    MessageBox.Show("Enter city", "Problem", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
 
-            LoadParties();
+                if (cmbBrokerAccount.SelectedValue == null)
+                {
+                    MessageBox.Show("Select broker account", "Problem", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                _partyService.Add(new Party
+                {
+                    Name = txtPartyName.Text,
+                    BrokerAccountId = Convert.ToInt32(cmbBrokerAccount.SelectedValue),
+                    City = txtCity.Text
+                });
+
+                txtPartyName.Clear();
+                txtCity.Clear();
+                cmbBrokerAccount.SelectedIndex = -1;
+
+                LoadParties();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error adding party:\n{ex.Message}", "Problem", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
         private void lstParties_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _selectedParty = lstParties.SelectedItem as Party;
-
-            if (_selectedParty != null)
+            try
             {
-                txtPartyName.Text = _selectedParty.Name;
+                _selectedParty = lstParties.SelectedItem as Party;
+
+                if (_selectedParty != null)
+                {
+                    txtPartyName.Text = _selectedParty.Name;
+                    cmbBrokerAccount.SelectedValue = _selectedParty.BrokerAccountId;
+                    txtCity.Text = _selectedParty.City;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error selecting party:\n{ex.Message}", "Problem", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
         private void UpdateParty_Click(object sender, RoutedEventArgs e)
         {
-            if (_selectedParty == null)
+            try
             {
-                MessageBox.Show("Select party first");
-                return;
-            }
+                if (_selectedParty == null)
+                {
+                    MessageBox.Show("Select party first", "Problem", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
 
-            if (string.IsNullOrWhiteSpace(txtPartyName.Text))
+                if (string.IsNullOrWhiteSpace(txtPartyName.Text))
+                {
+                    MessageBox.Show("Enter party name", "Problem", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                if (string.IsNullOrWhiteSpace(txtCity.Text))
+                {
+                    MessageBox.Show("Enter city", "Problem", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                if (cmbBrokerAccount.SelectedValue == null)
+                {
+                    MessageBox.Show("Select broker account", "Problem", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                _partyService.Update(
+                    _selectedParty.Id,
+                    txtPartyName.Text,
+                    Convert.ToInt32(cmbBrokerAccount.SelectedValue),
+                    txtCity.Text
+                );
+
+                txtPartyName.Clear();
+                txtCity.Clear();
+                cmbBrokerAccount.SelectedIndex = -1;
+                _selectedParty = null;
+
+                LoadParties();
+            }
+            catch (Exception ex)
             {
-                MessageBox.Show("Enter party name");
-                return;
+                MessageBox.Show($"Error updating party:\n{ex.Message}", "Problem", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-
-            _partyService.Update(_selectedParty.Id, txtPartyName.Text);
-
-            txtPartyName.Clear();
-            _selectedParty = null;
-
-            LoadParties();
         }
 
         private void DeleteParty_Click(object sender, RoutedEventArgs e)
         {
-            if (_selectedParty == null)
+            try
             {
-                MessageBox.Show("Select party first");
-                return;
+                if (_selectedParty == null)
+                {
+                    MessageBox.Show("Select party first", "Problem", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                var result = MessageBox.Show(
+                    "Are you sure you want to delete this party?",
+                    "Confirm",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+                if (result != MessageBoxResult.Yes)
+                    return;
+
+                var success = _partyService.Delete(_selectedParty.Id);
+
+                if (!success)
+                {
+                    MessageBox.Show("Cannot delete. Party is used in transactions.", "Problem", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                txtPartyName.Clear();
+                txtCity.Clear();
+                cmbBrokerAccount.SelectedIndex = -1;
+                _selectedParty = null;
+
+                LoadParties();
             }
-
-            var result = MessageBox.Show(
-                "Are you sure you want to delete this party?",
-                "Confirm",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-
-            if (result != MessageBoxResult.Yes)
-                return;
-
-            var success = _partyService.Delete(_selectedParty.Id);
-
-            if (!success)
+            catch (Exception ex)
             {
-                MessageBox.Show("Cannot delete. Party is used in transactions.");
-                return;
+                MessageBox.Show($"Error deleting party:\n{ex.Message}", "Problem", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-
-            txtPartyName.Clear();
-            _selectedParty = null;
-
-            LoadParties();
         }
     }
 }

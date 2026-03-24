@@ -17,10 +17,8 @@
                 BorderThickness="1"
                 Padding="15"
                 CornerRadius="5">
-
             <Grid>
 
-                <!-- Better responsive layout -->
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="140"/>
                     <ColumnDefinition Width="*"/>
@@ -32,84 +30,119 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
+                <!-- Row 1 -->
                 <!-- Sender -->
                 <TextBlock Text="Sender:"
-                           Style="{StaticResource HeaderText}"
-                           VerticalAlignment="Center"/>
+               Style="{StaticResource HeaderText}"
+               VerticalAlignment="Center"/>
 
                 <ComboBox x:Name="cmbSenderParty"
-                          DisplayMemberPath="Name"
-                          Grid.Column="1"
-                          SelectedValuePath="Id"
-                          Margin="5"/>
+              Grid.Column="1"
+              DisplayMemberPath="Name"
+              SelectedValuePath="Id"
+              Margin="5"/>
 
                 <!-- Receiver -->
                 <TextBlock Text="Receiver:"
-                           Grid.Column="2"
-                           Style="{StaticResource HeaderText}"
-                           VerticalAlignment="Center"/>
+               Grid.Column="2"
+               Style="{StaticResource HeaderText}"
+               VerticalAlignment="Center"/>
 
                 <ComboBox x:Name="cmbReceiverParty"
-                          DisplayMemberPath="Name"
-                          Grid.Column="3"
-                          SelectedValuePath="Id"
-                          Margin="5"/>
+              Grid.Column="3"
+              DisplayMemberPath="Name"
+              SelectedValuePath="Id"
+              Margin="5"/>
 
+                <!-- Row 2 -->
                 <!-- Date -->
                 <TextBlock Text="Date:"
-                           Grid.Row="1"
-                           Style="{StaticResource HeaderText}"
-                           VerticalAlignment="Center"/>
+               Grid.Row="1"
+               Style="{StaticResource HeaderText}"
+               VerticalAlignment="Center"/>
 
                 <DatePicker x:Name="dpTransactionDate"
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Margin="5"/>
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="5"/>
 
                 <!-- Amount -->
                 <TextBlock Text="Amount:"
-                           Grid.Row="1"
-                           Grid.Column="2"
-                           Style="{StaticResource HeaderText}"
-                           VerticalAlignment="Center"/>
+               Grid.Row="1"
+               Grid.Column="2"
+               Style="{StaticResource HeaderText}"
+               VerticalAlignment="Center"/>
 
                 <TextBox x:Name="txtTransactionAmount"
-                         Grid.Row="1"
-                         Grid.Column="3"
-                         Margin="5"
-                         PreviewTextInput="NumberOnly"
-                         DataObject.Pasting="OnPaste"/>
+             Grid.Row="1"
+             Grid.Column="3"
+             Margin="5"
+             PreviewTextInput="NumberOnly"
+             DataObject.Pasting="OnPaste"/>
 
+                <!-- Row 3 -->
                 <!-- Brokerage -->
                 <TextBlock Text="Brokerage:"
-                           Grid.Row="2"
-                           Style="{StaticResource HeaderText}"
-                           VerticalAlignment="Center"/>
+               Grid.Row="2"
+               Style="{StaticResource HeaderText}"
+               VerticalAlignment="Center"/>
 
                 <TextBox x:Name="txtBrokerageAmount"
-                         Grid.Row="2"
-                         Grid.Column="1"
-                         Margin="5"
-                         PreviewTextInput="NumberOnly"
-                         DataObject.Pasting="OnPaste"/>
+             Grid.Row="2"
+             Grid.Column="1"
+             Margin="5"
+             PreviewTextInput="NumberOnly"
+             DataObject.Pasting="OnPaste"/>
 
-                <StackPanel Grid.Row="2"
-                    Grid.Column="2"
-                    Grid.ColumnSpan="2"
-                    Orientation="Vertical"
-                    HorizontalAlignment="Right"
-                    Margin="5,15,0,0">
+                <!-- Bag Quantity -->
+                <TextBlock Text="Bag Qty:"
+               Grid.Row="2"
+               Grid.Column="2"
+               Style="{StaticResource HeaderText}"
+               VerticalAlignment="Center"/>
 
-                     <Button Content="Add / Update"
-                        Width="160"
-                        Margin="0,0,0,10"
-                        Click="AddTransaction_Click"/>
+                <TextBox x:Name="txtBagQuantity"
+             Grid.Row="2"
+             Grid.Column="3"
+             Margin="5"
+             PreviewTextInput="NumberOnly"
+             DataObject.Pasting="OnPaste"/>
+
+                <!-- Row 4 -->
+                <!-- Remarks -->
+                <TextBlock Text="Remarks:"
+               Grid.Row="3"
+               Style="{StaticResource HeaderText}"
+               VerticalAlignment="Top"/>
+
+                <TextBox x:Name="txtRemarks"
+             Grid.Row="3"
+             Grid.Column="1"
+             Grid.ColumnSpan="1"
+             Margin="5"
+             Height="60"
+             AcceptsReturn="True"
+             TextWrapping="Wrap"/>
+
+                <!-- Buttons -->
+                <StackPanel Grid.Row="3"
+                Grid.Column="2"
+                Grid.ColumnSpan="2"
+                Orientation="Vertical"
+                HorizontalAlignment="Right"
+                Margin="5">
+
+                    <Button Content="Add / Update"
+                Width="160"
+                Margin="0,0,0,10"
+                Click="AddTransaction_Click"/>
 
                     <Button Content="Delete"
-                        Width="120"
-                        Click="DeleteTransaction_Click"/>
+                Width="120"
+                Click="DeleteTransaction_Click"/>
 
                 </StackPanel>
 
@@ -134,6 +167,11 @@
                       RowHeight="30">
 
                 <DataGrid.Columns>
+
+                    <DataGridTextColumn Header="Date"
+                                        Binding="{Binding TransactionDate}"
+                                        Width="130"/>
+
                     <DataGridTextColumn Header="Sender"
                                         Binding="{Binding SenderName}"
                                         Width="*"/>
@@ -142,9 +180,10 @@
                                         Binding="{Binding ReceiverName}"
                                         Width="*"/>
 
-                    <DataGridTextColumn Header="Date"
-                                        Binding="{Binding TransactionDate}"
-                                        Width="130"/>
+                    <!-- NEW -->
+                    <DataGridTextColumn Header="Bag Qty"
+                                        Binding="{Binding BagQuantity}"
+                                        Width="100"/>
 
                     <DataGridTextColumn Header="Amount"
                                         Binding="{Binding Amount}"
@@ -153,6 +192,11 @@
                     <DataGridTextColumn Header="Brokerage"
                                         Binding="{Binding Brokerage}"
                                         Width="120"/>
+
+                    <DataGridTextColumn Header="Remarks"
+                                        Binding="{Binding Remarks}"
+                                        Width="200"/>
+
                 </DataGrid.Columns>
 
             </DataGrid>

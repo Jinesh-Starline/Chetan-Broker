@@ -1,4 +1,24 @@
-﻿-- User Table
+﻿CREATE TABLE BrokerAccount (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    Name TEXT NOT NULL UNIQUE,
+	PersonName TEXT NOT NULL,
+    MobileNo TEXT,
+    Address TEXT,
+    BankName TEXT,
+    AccountNumber TEXT,
+    IFSCCode TEXT,
+    PANNo TEXT
+);
+
+INSERT INTO BrokerAccount 
+(Name, PersonName,MobileNo, Address, BankName, AccountNumber, IFSCCode, PANNo) 
+VALUES 
+('Chetan Broker', 'Chetan Bakhai', '9825794142', 'Bhagvati palace, Kolki road, Upleta', 'Bank Of Baroda', '94870100011092', 'BARB0UPLETA', 'AYCPB5871E'),
+('Keval Broker', 'Keval Bakhai', '9123456780', 'Bhagvati palace, Kolki road, Upleta', 'State Bank of India', '42434360480', 'SBIN0005949', 'HOEPB5980R');
+
+
+
+-- User Table
 CREATE TABLE User (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     Username TEXT NOT NULL UNIQUE,
@@ -9,8 +29,15 @@ CREATE TABLE User (
 -- Party Table
 CREATE TABLE Party (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
-    Name TEXT NOT NULL UNIQUE
+    Name TEXT NOT NULL UNIQUE,
+    BrokerAccountId INTEGER,
+    FOREIGN KEY (BrokerAccountId) REFERENCES BrokerAccount(Id)
 );
+
+
+-- Default User
+INSERT INTO User (Username, PasswordHash)
+VALUES ('admin', '1OBAEzDswgKrhTwmJ2X6sA==.TJr8LrIAfXSvICc9x8s/BwElQd/l+OIdl8emv//PG/M=');
 
 -- Transaction Table
 CREATE TABLE [Transaction] (
@@ -19,12 +46,10 @@ CREATE TABLE [Transaction] (
     ReceiverId INTEGER NOT NULL,
     TransactionDate TEXT NOT NULL,
     Amount REAL NOT NULL CHECK (Amount > 0),
+    bagQuantity INTEGER NOT NULL CHECK (bagQuantity > 0),
+    remarks TEXT,
     Brokerage REAL NOT NULL CHECK (Brokerage >= 0),
     FOREIGN KEY (SenderId) REFERENCES Party(Id),
     FOREIGN KEY (ReceiverId) REFERENCES Party(Id),
     CHECK (SenderId != ReceiverId)
 );
-
--- Default User
-INSERT INTO User (Username, PasswordHash)
-VALUES ('admin', '1OBAEzDswgKrhTwmJ2X6sA==.TJr8LrIAfXSvICc9x8s/BwElQd/l+OIdl8emv//PG/M=');

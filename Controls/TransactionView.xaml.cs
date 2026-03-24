@@ -38,95 +38,166 @@ namespace Chetan_Broker.Controls
 
         private void LoadParties()
         {
-            var parties = _partyService.GetAll();
+            try
+            {
+                var parties = _partyService.GetAll();
 
-            cmbSenderParty.ItemsSource = parties;
-            cmbReceiverParty.ItemsSource = parties;
+                cmbSenderParty.ItemsSource = parties;
+                cmbReceiverParty.ItemsSource = parties;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Failed to load parties.\n\n{ex.Message}",
+                    "Load Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
-
         private void AddTransaction_Click(object sender, RoutedEventArgs e)
         {
-            if (cmbSenderParty.SelectedItem == null)
-            {   
-                MessageBox.Show("Please select Sender Party");
-                return;
-            }
-
-            if (cmbReceiverParty.SelectedItem == null)
+            try
             {
-                MessageBox.Show("Please select Receiver Party");
-                return;
-            }
+                if (cmbSenderParty.SelectedItem == null)
+                {
+                    MessageBox.Show("Please select Sender Party",
+                        "Validation",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
 
-            if (cmbSenderParty.SelectedItem == cmbReceiverParty.SelectedItem)
-            {
-                MessageBox.Show("Sender and Receiver cannot be same");
-                return;
-            }
+                if (cmbReceiverParty.SelectedItem == null)
+                {
+                    MessageBox.Show("Please select Receiver Party",
+                        "Validation",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
 
-            if (!decimal.TryParse(txtTransactionAmount.Text, out var amount))
-            {
-                MessageBox.Show("Please enter valid Amount");
-                return;
-            }
+                if (cmbSenderParty.SelectedItem == cmbReceiverParty.SelectedItem)
+                {
+                    MessageBox.Show("Sender and Receiver cannot be same",
+                        "Validation",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
 
-            if (amount <= 0)
-            {
-                MessageBox.Show("Amount must be greater than 0");
-                return;
-            }
+                if (!decimal.TryParse(txtTransactionAmount.Text, out var amount))
+                {
+                    MessageBox.Show("Please enter valid Amount",
+                        "Validation",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
 
-            if (!decimal.TryParse(txtBrokerageAmount.Text, out var brokerage))
-            {
-                MessageBox.Show("Please enter valid Brokerage");
-                return;
-            }
+                if (amount <= 0)
+                {
+                    MessageBox.Show("Amount must be greater than 0",
+                        "Validation",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
 
-            if (brokerage < 0)
-            {
-                MessageBox.Show("Brokerage cannot be negative");
-                return;
-            }
+                if (!decimal.TryParse(txtBrokerageAmount.Text, out var brokerage))
+                {
+                    MessageBox.Show("Please enter valid Brokerage",
+                        "Validation",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
 
-            if (dpTransactionDate.SelectedDate == null)
-            {
-                MessageBox.Show("Please select a date");
-                return;
-            }
+                if (brokerage < 0)
+                {
+                    MessageBox.Show("Brokerage cannot be negative",
+                        "Validation",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
 
-            if (dpTransactionDate.SelectedDate > DateTime.Today)
-            {
-                MessageBox.Show("Future date not allowed");
-                return;
-            }
+                if (dpTransactionDate.SelectedDate == null)
+                {
+                    MessageBox.Show("Please select a date",
+                        "Validation",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
 
-            var model = new TransactionModel
-            {
-                SenderId = Convert.ToInt32(cmbSenderParty.SelectedValue),
-                ReceiverId = Convert.ToInt32(cmbReceiverParty.SelectedValue),
-                TransactionDate = dpTransactionDate.SelectedDate.Value.ToString("yyyy-MM-dd"),
-                Amount = amount,
-                Brokerage = brokerage
-            };
+                if (dpTransactionDate.SelectedDate > DateTime.Today)
+                {
+                    MessageBox.Show("Future date not allowed",
+                        "Validation",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
 
-            if (_selectedTransactionId == null)
-            {
-                _transactionService.Add(model);
-                MessageBox.Show("Transaction Added");
-            }
-            else
-            {
-                _transactionService.Update(_selectedTransactionId.Value, model);
-                MessageBox.Show("Transaction Updated");
-            }
+                int bagQty = 0;
+                if (!string.IsNullOrWhiteSpace(txtBagQuantity.Text))
+                    int.TryParse(txtBagQuantity.Text, out bagQty);
 
-            ClearForm();
-            LoadTransactions();
+                var model = new TransactionModel
+                {
+                    SenderId = Convert.ToInt32(cmbSenderParty.SelectedValue),
+                    ReceiverId = Convert.ToInt32(cmbReceiverParty.SelectedValue),
+                    TransactionDate = dpTransactionDate.SelectedDate.Value.ToString("yyyy-MM-dd"),
+                    Amount = amount,
+                    Brokerage = brokerage,
+                    BagQuantity = bagQty,
+                    Remarks = txtRemarks.Text
+                };
+
+                if (_selectedTransactionId == null)
+                {
+                    _transactionService.Add(model);
+                    MessageBox.Show("Transaction added successfully",
+                        "Success",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
+                else
+                {
+                    _transactionService.Update(_selectedTransactionId.Value, model);
+                    MessageBox.Show("Transaction updated successfully",
+                        "Success",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Information);
+                }
+
+                ClearForm();
+                LoadTransactions();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error saving transaction.\n\n{ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         private void LoadTransactions()
         {
-            dgTransactions.ItemsSource = _transactionService.GetAllWithNames();
+            try
+            {
+                dgTransactions.ItemsSource = _transactionService.GetAllWithNames();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Failed to load transactions.\n\n{ex.Message}",
+                    "Load Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         private void NumberOnly(object sender, TextCompositionEventArgs e)
@@ -157,19 +228,32 @@ namespace Chetan_Broker.Controls
 
         private void dgTransactions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            dynamic item = dgTransactions.SelectedItem;
+            try
+            {
+                dynamic item = dgTransactions.SelectedItem;
 
-            if (item == null) return;
+                if (item == null) return;
 
-            _selectedTransactionId = (int?)item.Id;
+                _selectedTransactionId = (int?)item.Id;
 
-            cmbSenderParty.SelectedValue = item.SenderId;
-            cmbReceiverParty.SelectedValue = item.ReceiverId;
+                cmbSenderParty.SelectedValue = item.SenderId;
+                cmbReceiverParty.SelectedValue = item.ReceiverId;
 
-            dpTransactionDate.SelectedDate = DateTime.Parse(item.TransactionDate);
+                dpTransactionDate.SelectedDate = DateTime.Parse(item.TransactionDate);
 
-            txtTransactionAmount.Text = item.Amount.ToString();
-            txtBrokerageAmount.Text = item.Brokerage.ToString();
+                txtTransactionAmount.Text = item.Amount.ToString();
+                txtBrokerageAmount.Text = item.Brokerage.ToString();
+                txtBagQuantity.Text = item.BagQuantity.ToString();
+                txtRemarks.Text = item.Remarks;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error selecting transaction.\n\n{ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
 
         private void ClearForm()
@@ -183,31 +267,51 @@ namespace Chetan_Broker.Controls
 
             txtTransactionAmount.Clear();
             txtBrokerageAmount.Clear();
+
+            txtBagQuantity.Clear();
+            txtRemarks.Clear();
         }
 
         private void DeleteTransaction_Click(object sender, RoutedEventArgs e)
         {
-            if (_selectedTransactionId == null)
+            try
             {
-                MessageBox.Show("Select transaction first");
-                return;
+                if (_selectedTransactionId == null)
+                {
+                    MessageBox.Show("Select transaction first",
+                        "Validation",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+                    return;
+                }
+
+                var result = MessageBox.Show(
+                    "Are you sure you want to delete this transaction?",
+                    "Confirm Delete",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (result != MessageBoxResult.Yes)
+                    return;
+
+                _transactionService.Delete(_selectedTransactionId.Value);
+
+                MessageBox.Show("Transaction deleted successfully",
+                    "Success",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+
+                ClearForm();
+                LoadTransactions();
             }
-
-            var result = MessageBox.Show(
-                "Are you sure you want to delete this transaction?",
-                "Confirm",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Warning);
-
-            if (result != MessageBoxResult.Yes)
-                return;
-
-            _transactionService.Delete(_selectedTransactionId.Value);
-
-            MessageBox.Show("Transaction deleted");
-
-            ClearForm();
-            LoadTransactions();
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    $"Error deleting transaction.\n\n{ex.Message}",
+                    "Error",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
         }
     }
 
