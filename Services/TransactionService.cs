@@ -112,8 +112,8 @@ namespace Chetan_Broker.Services
                         t.TransactionDate,
                         t.Amount,
                         t.Brokerage,
-                        t.BagQuantity,
-                        t.Remarks
+                        t.BagQuantity As BagQuantity,
+                        t.Remarks As Remarks
                     FROM [Transaction] t
                     JOIN Party s ON t.SenderId = s.Id
                     JOIN Party r ON t.ReceiverId = r.Id
@@ -167,6 +167,10 @@ namespace Chetan_Broker.Services
                             WHEN t.SenderId = @Id THEN r.Name
                             ELSE s.Name
                         END AS Name,
+                        CASE 
+                            WHEN t.SenderId = @Id THEN r.City
+                            ELSE s.City
+                        END AS City,
                         t.TransactionDate,
                         t.Amount,
                         t.Brokerage,

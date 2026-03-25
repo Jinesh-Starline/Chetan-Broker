@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Theme xmlns="http://wixtoolset.org/schemas/v4/thm">
+    <Font Id="0" Height="-12" Weight="400" Name="Segoe UI" />
+    <Font Id="1" Height="-24" Weight="400" Name="Segoe UI Semilight" />
+    
+    <Window Width="600" Height="400" HexStyle="100a0000" FontId="0" Background="#FFFFFF">
+        <Image X="0" Y="0" Width="170" Height="400" SourceFile="LogoSideFile" />
+        
+        <Text X="190" Y="20" Width="-15" Height="40" FontId="1" DisablePrefix="yes">Chetan Broker Setup</Text>
+        
+        <Text X="190" Y="70" Width="-15" Height="150" FontId="0">Please review the license terms before installing the software.</Text>
+        <Hyperlink Name="EulaHyperlink" X="190" Y="230" Width="-15" Height="20" FontId="0">Review License Agreement</Hyperlink>
+        <Checkbox Name="EulaAcceptCheckbox" X="190" Y="260" Width="-15" Height="20" TabStop="yes" FontId="0">I agree to the terms and conditions</Checkbox>
+        
+        <Button Name="InstallButton" X="-110" Y="-20" Width="90" Height="28" TabStop="yes" FontId="0">Install</Button>
+        <Button Name="CloseButton" X="-10" Y="-20" Width="90" Height="28" TabStop="yes" FontId="0">Cancel</Button>
+    </Window>
+</Theme>

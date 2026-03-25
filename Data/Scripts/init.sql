@@ -13,8 +13,8 @@
 INSERT INTO BrokerAccount 
 (Name, PersonName,MobileNo, Address, BankName, AccountNumber, IFSCCode, PANNo) 
 VALUES 
-('Chetan Broker', 'Chetan Bakhai', '9825794142', 'Bhagvati palace, Kolki road, Upleta', 'Bank Of Baroda', '94870100011092', 'BARB0UPLETA', 'AYCPB5871E'),
-('Keval Broker', 'Keval Bakhai', '9123456780', 'Bhagvati palace, Kolki road, Upleta', 'State Bank of India', '42434360480', 'SBIN0005949', 'HOEPB5980R');
+('Chetan Brokers', 'CHETAN HARSUKHLAL BAKHAI', '98257 94142', 'Bhagvati palace, Kolki road, Upleta', 'Bank Of Baroda', '94870100011092', 'BARB0UPLETA', 'AYCPB5871E'),
+('Keval Brokers', 'KEVAL CHETANBHAI BAKHAI', '97269 15827', 'Bhagvati palace, Kolki road, Upleta', 'State Bank of India', '42434360480', 'SBIN0005949', 'HOEPB5980R');
 
 
 
@@ -31,6 +31,7 @@ CREATE TABLE Party (
     Id INTEGER PRIMARY KEY AUTOINCREMENT,
     Name TEXT NOT NULL UNIQUE,
     BrokerAccountId INTEGER,
+    City TEXT,
     FOREIGN KEY (BrokerAccountId) REFERENCES BrokerAccount(Id)
 );
 
@@ -45,10 +46,10 @@ CREATE TABLE [Transaction] (
     SenderId INTEGER NOT NULL,
     ReceiverId INTEGER NOT NULL,
     TransactionDate TEXT NOT NULL,
-    Amount REAL NOT NULL CHECK (Amount > 0),
-    bagQuantity INTEGER NOT NULL CHECK (bagQuantity > 0),
+    Amount TEXT NOT NULL,
+    bagQuantity TEXT NOT NULL,
     remarks TEXT,
-    Brokerage REAL NOT NULL CHECK (Brokerage >= 0),
+    Brokerage TEXT NOT NULL,
     FOREIGN KEY (SenderId) REFERENCES Party(Id),
     FOREIGN KEY (ReceiverId) REFERENCES Party(Id),
     CHECK (SenderId != ReceiverId)

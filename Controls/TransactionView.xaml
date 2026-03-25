@@ -79,9 +79,7 @@
                 <TextBox x:Name="txtTransactionAmount"
              Grid.Row="1"
              Grid.Column="3"
-             Margin="5"
-             PreviewTextInput="NumberOnly"
-             DataObject.Pasting="OnPaste"/>
+             Margin="5"/>
 
                 <!-- Row 3 -->
                 <!-- Brokerage -->
@@ -93,9 +91,7 @@
                 <TextBox x:Name="txtBrokerageAmount"
              Grid.Row="2"
              Grid.Column="1"
-             Margin="5"
-             PreviewTextInput="NumberOnly"
-             DataObject.Pasting="OnPaste"/>
+             Margin="5"/>
 
                 <!-- Bag Quantity -->
                 <TextBlock Text="Bag Qty:"
@@ -107,9 +103,7 @@
                 <TextBox x:Name="txtBagQuantity"
              Grid.Row="2"
              Grid.Column="3"
-             Margin="5"
-             PreviewTextInput="NumberOnly"
-             DataObject.Pasting="OnPaste"/>
+             Margin="5"/>
 
                 <!-- Row 4 -->
                 <!-- Remarks -->
@@ -187,11 +181,11 @@
 
                     <DataGridTextColumn Header="Amount"
                                         Binding="{Binding Amount}"
-                                        Width="120"/>
+                                        Width="150"/>
 
                     <DataGridTextColumn Header="Brokerage"
                                         Binding="{Binding Brokerage}"
-                                        Width="120"/>
+                                        Width="100"/>
 
                     <DataGridTextColumn Header="Remarks"
                                         Binding="{Binding Remarks}"

@@ -57,12 +57,10 @@ namespace Chetan_Broker.Controls
                 _reportData = data;
                 dgReport.ItemsSource = _reportData;
 
-                Console.WriteLine($"Loaded {data.Count} transactions for party ID {partyId}. and {data.First()}");
 
                 decimal totalBrokerage = data
-                        .Select(x => Convert.ToDecimal(x.Brokerage))
-                        .ToList()
-                        .Sum();
+                .Select(x => ParseBrokerage(x.Brokerage))
+                .Sum();
 
                 txtTotalBrokerage.Text = totalBrokerage.ToString("N2");
                 _totalBrokerage = totalBrokerage;
@@ -137,6 +135,24 @@ namespace Chetan_Broker.Controls
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
+        }
+
+        private static decimal ParseBrokerage(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+                return 0;
+
+            // Remove "/-" and "." and spaces
+            var cleaned = input
+                .Replace("/-", "")
+                .Replace(".", "")
+                .Replace(" ", "")
+                .Trim();
+
+            // Remove commas for decimal conversion
+            cleaned = cleaned.Replace(",", "");
+
+            return decimal.TryParse(cleaned, out var value) ? value : 0;
         }
     }
 }

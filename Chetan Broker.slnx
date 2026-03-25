@@ -1,3 +1,15 @@
 <Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Broker.AppSetup/Broker.AppSetup.wixproj" Type="b7dd6f7e-def8-4e67-b5b7-07ef123db6f0" Id="01538e1e-0263-411d-9a47-49adb41cffa9">
+    <Platform Solution="*|Any CPU" Project="x64" />
+  </Project>
+  <Project Path="Broker.Installer/Broker.Installer.wixproj" Type="b7dd6f7e-def8-4e67-b5b7-07ef123db6f0" Id="0fb74328-558f-42bb-bbfb-1ac03aa359e3">
+    <Platform Solution="*|Any CPU" Project="x64" />
+  </Project>
   <Project Path="Chetan Broker.csproj" />
 </Solution>

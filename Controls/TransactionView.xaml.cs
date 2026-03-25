@@ -85,7 +85,7 @@ namespace Chetan_Broker.Controls
                     return;
                 }
 
-                if (!decimal.TryParse(txtTransactionAmount.Text, out var amount))
+                if (string.IsNullOrEmpty(txtTransactionAmount.Text))
                 {
                     MessageBox.Show("Please enter valid Amount",
                         "Validation",
@@ -94,27 +94,9 @@ namespace Chetan_Broker.Controls
                     return;
                 }
 
-                if (amount <= 0)
-                {
-                    MessageBox.Show("Amount must be greater than 0",
-                        "Validation",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                    return;
-                }
-
-                if (!decimal.TryParse(txtBrokerageAmount.Text, out var brokerage))
+                if (string.IsNullOrEmpty(txtBrokerageAmount.Text))
                 {
                     MessageBox.Show("Please enter valid Brokerage",
-                        "Validation",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                    return;
-                }
-
-                if (brokerage < 0)
-                {
-                    MessageBox.Show("Brokerage cannot be negative",
                         "Validation",
                         MessageBoxButton.OK,
                         MessageBoxImage.Warning);
@@ -139,18 +121,24 @@ namespace Chetan_Broker.Controls
                     return;
                 }
 
-                int bagQty = 0;
-                if (!string.IsNullOrWhiteSpace(txtBagQuantity.Text))
-                    int.TryParse(txtBagQuantity.Text, out bagQty);
+                //int bagQty = 0;
+                if (string.IsNullOrWhiteSpace(txtBagQuantity.Text))
+                {
+                    MessageBox.Show("Please enter valid Bag Quantity",
+                       "Validation",
+                       MessageBoxButton.OK,
+                       MessageBoxImage.Warning);
+                    return;
+                }
 
                 var model = new TransactionModel
                 {
                     SenderId = Convert.ToInt32(cmbSenderParty.SelectedValue),
                     ReceiverId = Convert.ToInt32(cmbReceiverParty.SelectedValue),
                     TransactionDate = dpTransactionDate.SelectedDate.Value.ToString("yyyy-MM-dd"),
-                    Amount = amount,
-                    Brokerage = brokerage,
-                    BagQuantity = bagQty,
+                    Amount = txtTransactionAmount.Text,
+                    Brokerage = txtBrokerageAmount.Text,
+                    BagQuantity = txtBagQuantity.Text,
                     Remarks = txtRemarks.Text
                 };
 
@@ -197,32 +185,6 @@ namespace Chetan_Broker.Controls
                     "Load Error",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
-            }
-        }
-
-        private void NumberOnly(object sender, TextCompositionEventArgs e)
-        {
-            var textBox = sender as TextBox;
-
-            string fullText = textBox.Text.Insert(textBox.SelectionStart, e.Text);
-
-            e.Handled = !decimal.TryParse(fullText, out _);
-        }
-
-        private void OnPaste(object sender, DataObjectPastingEventArgs e)
-        {
-            if (e.DataObject.GetDataPresent(typeof(string)))
-            {
-                var text = (string)e.DataObject.GetData(typeof(string));
-
-                if (!decimal.TryParse(text, out _))
-                {
-                    e.CancelCommand();
-                }
-            }
-            else
-            {
-                e.CancelCommand();
             }
         }
 

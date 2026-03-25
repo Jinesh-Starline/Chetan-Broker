@@ -37,11 +37,11 @@ namespace Chetan_Broker.Models
         public int Id { get; set; }
         public int SenderId { get; set; }
         public int ReceiverId { get; set; }
-        public string TransactionDate { get; set; }
-        public decimal Amount { get; set; }
-        public decimal Brokerage { get; set; }
-        public int BagQuantity { get; set; }
-        public string Remarks { get; set; }
+        public string? TransactionDate { get; set; }
+        public string? Amount { get; set; }
+        public string? Brokerage { get; set; }
+        public string? BagQuantity { get; set; }
+        public string? Remarks { get; set; }
     }
     public class User
     {
@@ -54,10 +54,11 @@ namespace Chetan_Broker.Models
     {
         public int? Id { get; set; }
         public string? Name { get; set; }
+        public string? City { get; set; }
         public string? TransactionDate { get; set; }
-        public decimal? Amount { get; set; }
-        public decimal? Brokerage { get; set; }
-        public int? BagQuantity { get; set; }
+        public string? Amount { get; set; }
+        public string? Brokerage { get; set; }
+        public string? BagQuantity { get; set; }
         public string? Remarks { get; set; }
     }
 }

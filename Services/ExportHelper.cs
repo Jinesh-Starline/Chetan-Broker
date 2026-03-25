@@ -4,7 +4,8 @@ using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
-using iText.Layout.Properties;
+using iText.Kernel.Font;
+using iText.IO.Font;
 using System.Windows;
 using TextAlignment = iText.Layout.Properties.TextAlignment;
 
@@ -12,14 +13,20 @@ namespace Chetan_Broker.Services
 {
     public static class ExportHelper
     {
-        public static void ExportToPdf(List<ReportDto> data, string partyName, string filePath, decimal totalBrokerage,BrokerAccount broker)
+
+        public static void ExportToPdf(
+     List<ReportDto> data,
+     string partyName,
+     string filePath,
+     decimal totalBrokerage,
+     BrokerAccount broker)
         {
             try
             {
                 using var writer = new PdfWriter(filePath);
                 using var pdf = new PdfDocument(writer);
 
-                // Page Size (Portrait 21.5 x 34.5 cm)
+
                 float width = 21.5f * 72f / 2.54f;
                 float height = 34.5f * 72f / 2.54f;
 
@@ -29,104 +36,123 @@ namespace Chetan_Broker.Services
                 var document = new Document(pdf, pageSize);
                 document.SetMargins(25, 20, 20, 20);
 
+                PdfFont font = PdfFontFactory.CreateFont(
+                    @"C:\Windows\Fonts\calibri.TTF",
+                    PdfEncodings.WINANSI
+                );
+
+                document.SetFont(font);
+
                 // Title
-                document.Add(new Paragraph($"{partyName} Brokrage Bill {DateTime.Today.AddDays(-365).ToString("yy")}-{DateTime.Today.ToString("yy")}")
+                document.Add(new Paragraph($"{partyName} Brokerage Bill {DateTime.Today.AddDays(-365):yy}-{DateTime.Today:yy}")
                     .SetFontSize(18)
                     .SimulateBold()
                     .SetTextAlignment(TextAlignment.CENTER)
-                    .SetMarginBottom(5));
+                    .SetMargin(0));
 
-
-                // 🔥 Broker Name (center)
+                // Broker Name
                 document.Add(new Paragraph(broker.Name)
                     .SetFontSize(18)
                     .SimulateBold()
                     .SetTextAlignment(TextAlignment.CENTER)
-                    .SetMarginBottom(5));
+                    .SetMargin(0));
 
+                // Info Table
+                var infoTable = new Table(new float[] { 1, 1 }).UseAllAvailableWidth().SimulateBold();
 
-                // 🔥 Info Table (2 columns)
-                var infoTable = new Table(new float[] { 1, 1 });
-                infoTable.UseAllAvailableWidth();
-                infoTable.SetFontSize(16);
+                Cell InfoCell(string text) =>
+                    new Cell().Add(new Paragraph(text).SetMargin(0)).SetPadding(5);
 
-                // Row 1
-                infoTable.AddCell(new Paragraph($"{broker.PersonName ?? "--"}"));
-                infoTable.AddCell(new Paragraph($"Mobile: {broker.MobileNo ?? "--"}"));
+                infoTable.AddCell(InfoCell(broker.PersonName ?? "--"));
+                infoTable.AddCell(InfoCell($"Mobile: {broker.MobileNo ?? "--"}"));
 
-                // Row 2
-                infoTable.AddCell(new Paragraph($"Bank: {broker.BankName ?? "--"}"));
-                infoTable.AddCell(new Paragraph($"A/C: {broker.AccountNumber ?? "--"}"));
+                infoTable.AddCell(InfoCell($"Bank: {broker.BankName ?? "--"}"));
+                infoTable.AddCell(InfoCell($"A/C: {broker.AccountNumber ?? "--"}"));
 
-                // Row 3
-                infoTable.AddCell(new Paragraph($"IFSC: {broker.IFSCCode ?? "--"}"));
-                infoTable.AddCell(new Paragraph($"PAN: {broker.PANNo ?? "--"}"));
+                infoTable.AddCell(InfoCell($"IFSC: {broker.IFSCCode ?? "--"}"));
+                infoTable.AddCell(InfoCell($"PAN: {broker.PANNo ?? "--"}"));
 
-                // 🔥 Address (full width row)
                 infoTable.AddCell(new Cell(1, 2)
-                    .Add(new Paragraph($"Address: {broker.Address ?? "--"}")));
+                    .Add(new Paragraph($"Address: {broker.Address ?? "--"}").SetMargin(0))
+                    .SetPadding(5));
 
                 document.Add(infoTable);
 
-                // spacing
-                document.Add(new Paragraph("\n"));
+                document.Add(new Paragraph("\n").SetMargin(0));
 
-
-                // Table
-                var table = new Table(new float[] { 70, 260, 80, 70, 80, 90 });
-                table.UseAllAvailableWidth();
-                table.SetFontSize(13f);
-                table.SimulateBold();
+                // 🔥 Main Table
+                var table = new Table(new float[] { 60, 330, 100, 45, 100, 65 })
+                    .UseAllAvailableWidth()
+                    .SetCharacterSpacing(-0.1f)
+                    .SimulateBold()
+                    .SetFontSize(11); // ✅ Global font size
 
                 var headerBg = new DeviceRgb(230, 230, 230);
 
-                var headers = new List<Cell>
-                {
-                    new Cell().Add(new Paragraph("Date")),
-                    new Cell().Add(new Paragraph("Name")),
-                    new Cell().Add(new Paragraph("Rate")),
-    
-                    // 🔥 Multi-line header
-                    new Cell().Add(new Paragraph("Bag\nQuantity")),
+                Cell Header(string text) =>
+                    new Cell()
+                        .Add(new Paragraph(text)
+                            .SetMargin(0)
+                            .SetFontSize(13))
+                            .SetCharacterSpacing(-0.1f)
+                            .SetBackgroundColor(headerBg)
+                            .SetTextAlignment(TextAlignment.CENTER)
+                            .SimulateBold()
+                            .SetPadding(0);
 
-                    new Cell().Add(new Paragraph("Remarks")),
-                    new Cell().Add(new Paragraph("Rs."))
-                };
+                table.AddHeaderCell(Header("Date"));
+                table.AddHeaderCell(Header("Name"));
+                table.AddHeaderCell(Header("City"));
+                table.AddHeaderCell(Header("Bag\nQty"));
+                table.AddHeaderCell(Header("Amount"));
+                table.AddHeaderCell(Header("Rs."));
 
-                foreach (var cell in headers)
-                {
-                    cell.SetBackgroundColor(headerBg)
-                        .SetTextAlignment(TextAlignment.CENTER)
-                        .SimulateBold();
+                Cell DataCell(string text) =>
+                    new Cell()
+                        .Add(new Paragraph(text)
+                            .SetMargin(0)
+                            .SetTextAlignment(TextAlignment.CENTER))
+                        .SetPadding(0);
 
-                    table.AddHeaderCell(cell);
-                }
-
-                // Rows
                 foreach (var item in data)
                 {
-                    DateTime dt;
-                    string formattedDate = DateTime.TryParse(item.TransactionDate, out dt)
-                        ? dt.ToString("dd-MM-yy")
-                        : item.TransactionDate;
+                    string formattedDate = FormatDateManual(item.TransactionDate);
 
-                    table.AddCell(new Paragraph(formattedDate)
-                        .SetTextAlignment(TextAlignment.CENTER));
+                    string name = item.Name ?? "--";
+                    string city = string.IsNullOrWhiteSpace(item.City) ? "--" : item.City;
 
-                    table.AddCell(new Paragraph(item.Name ?? "--")
-                        .SetTextAlignment(TextAlignment.CENTER));
+                    // 🔥 Multi-line Amount
+                    string amount = string.Join("\n",
+                        (item.Amount ?? ""));
 
+                    // 🔥 Bag (Remarks + Quantity)
+                    Paragraph bagText;
 
-                    table.AddCell(new Paragraph(FormatIndianCurrency(item.Amount))
-                        .SetTextAlignment(TextAlignment.CENTER));
+                    if (string.IsNullOrWhiteSpace(item.Remarks) || item.Remarks == "--")
+                    {
+                        bagText = new Paragraph(item.BagQuantity.ToString())
+                            .SetMargin(0).SetPadding(0)
+                            .SetTextAlignment(TextAlignment.CENTER);
+                    }
+                    else
+                    {
+                        bagText = new Paragraph()
+                            .Add(new Text(item.Remarks))
+                            .Add("\n")
+                            .Add(new Text(item.BagQuantity.ToString()))
+                            .SetMargin(0).SetPadding(0)
+                            .SetTextAlignment(TextAlignment.CENTER);
+                    }
 
-                    table.AddCell(new Paragraph(item.BagQuantity.ToString())
-                        .SetTextAlignment(TextAlignment.CENTER));
+                    table.AddCell(DataCell(formattedDate));
+                    table.AddCell(DataCell(name));
+                    table.AddCell(DataCell(city));
+                    table.AddCell(new Cell()
+                        .Add(bagText)
+                        .SetPadding(0));
 
-                    table.AddCell(new Paragraph(item.Remarks ?? "--").SetTextAlignment(TextAlignment.CENTER));
-
-                    table.AddCell(new Paragraph($"{FormatIndianCurrency(item.Brokerage)}."))
-                        .SetTextAlignment(TextAlignment.CENTER);
+                    table.AddCell(DataCell(amount));
+                    table.AddCell(DataCell(item.Brokerage ?? "--"));
                 }
 
                 document.Add(table);
@@ -136,7 +162,8 @@ namespace Chetan_Broker.Services
                     .SimulateBold()
                     .SetFontSize(18)
                     .SetTextAlignment(TextAlignment.RIGHT)
-                    .SetMarginTop(10));
+                    .SetMarginTop(10)
+                    .SetMarginBottom(0));
 
                 document.Close();
             }
@@ -150,15 +177,17 @@ namespace Chetan_Broker.Services
             }
         }
 
-        private static string FormatIndianCurrency(decimal? value)
+        private static string FormatDateManual(string input)
         {
-            if (value == null) return "0/-";
+            if (string.IsNullOrWhiteSpace(input) || input.Length < 10)
+                return input;
 
-            return string.Format(
-                new System.Globalization.CultureInfo("en-IN"),
-                "{0:N0}/-",
-                value
-            );
+            // Expected: yyyy-MM-dd
+            string year = input.Substring(2, 2);   // "26"
+            string month = input.Substring(5, 2);  // "03"
+            string day = input.Substring(8, 2);    // "26"
+
+            return $"{day}/{month}/{year}";
         }
     }
 }
