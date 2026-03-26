@@ -25,9 +25,9 @@
 				LogoSideFile="..\Assets\appicon.png"
 				LicenseFile="..\Assets\licence.txt"
 				SuppressOptionsUI="yes" />
-		</BootstrapperApplication>
+		</BootstrapperApplication>-->
 		
-		-->
+		
 		<netfx:DotNetCoreSearch Id="DotNetVerFind"
 		                        Variable="DOT_NET_VER"
 		                        RuntimeType="desktop"

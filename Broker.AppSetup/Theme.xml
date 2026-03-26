@@ -1,18 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Theme xmlns="http://wixtoolset.org/schemas/v4/thm">
-    <Font Id="0" Height="-12" Weight="400" Name="Segoe UI" />
-    <Font Id="1" Height="-24" Weight="400" Name="Segoe UI Semilight" />
-    
-    <Window Width="600" Height="400" HexStyle="100a0000" FontId="0" Background="#FFFFFF">
-        <Image X="0" Y="0" Width="170" Height="400" SourceFile="LogoSideFile" />
-        
-        <Text X="190" Y="20" Width="-15" Height="40" FontId="1" DisablePrefix="yes">Chetan Broker Setup</Text>
-        
-        <Text X="190" Y="70" Width="-15" Height="150" FontId="0">Please review the license terms before installing the software.</Text>
-        <Hyperlink Name="EulaHyperlink" X="190" Y="230" Width="-15" Height="20" FontId="0">Review License Agreement</Hyperlink>
-        <Checkbox Name="EulaAcceptCheckbox" X="190" Y="260" Width="-15" Height="20" TabStop="yes" FontId="0">I agree to the terms and conditions</Checkbox>
-        
-        <Button Name="InstallButton" X="-110" Y="-20" Width="90" Height="28" TabStop="yes" FontId="0">Install</Button>
-        <Button Name="CloseButton" X="-10" Y="-20" Width="90" Height="28" TabStop="yes" FontId="0">Cancel</Button>
-    </Window>
+	<Font Id="0" Height="-12" Weight="400" Name="Segoe UI" />
+	<Font Id="1" Height="-24" Weight="400" Name="Segoe UI Semilight" />
+
+	<Window Width="600" Height="400" HexStyle="100a0000" FontId="0" Caption="Chetan Broker Setup">
+		<Image X="0" Y="0" Width="170" Height="400" SourceFile="LogoSideFile" />
+
+		<Page Name="Install">
+			<Text X="190" Y="20" Width="-15" Height="40" FontId="1">Chetan Broker Setup</Text>
+			<Text X="190" Y="70" Width="-15" Height="100" FontId="0">Ready to install Chetan Broker on your computer. Please accept the terms to begin.</Text>
+			<Checkbox Name="EulaAcceptCheckbox" X="190" Y="230" Width="-15" Height="20" TabStop="yes" FontId="0">I agree to the terms and conditions</Checkbox>
+			<Button Name="InstallButton" X="-110" Y="-20" Width="90" Height="28" TabStop="yes" FontId="0">Install</Button>
+			<Button Name="CloseButton" X="-10" Y="-20" Width="90" Height="28" TabStop="yes" FontId="0">Cancel</Button>
+		</Page>
+
+		<Page Name="Maintenance">
+			<Text X="190" Y="20" Width="-15" Height="40" FontId="1">Already Installed</Text>
+			<Text X="190" Y="70" Width="-15" Height="100" FontId="0">Chetan Broker is already installed on this computer. You can repair the current installation or remove it to perform a clean install.</Text>
+
+			<Button Name="RepairButton" X="-210" Y="-20" Width="90" Height="28" TabStop="yes" FontId="0">Repair</Button>
+			<Button Name="UninstallButton" X="-110" Y="-20" Width="90" Height="28" TabStop="yes" FontId="0">Uninstall</Button>
+			<Button Name="CloseButton" X="-10" Y="-20" Width="90" Height="28" TabStop="yes" FontId="0">Cancel</Button>
+		</Page>
+
+		<Page Name="Progress">
+			<Text X="190" Y="20" Width="-15" Height="40" FontId="1">Processing...</Text>
+			<Text X="190" Y="70" Width="-15" Height="30" FontId="0">Please wait while we complete the requested action.</Text>
+			<ProgressBar Name="OverallProgressBar" X="190" Y="150" Width="-25" Height="15" />
+			<Button Name="CloseButton" X="-10" Y="-20" Width="90" Height="28" TabStop="yes" FontId="0">Cancel</Button>
+		</Page>
+
+		<Page Name="Success">
+			<Text X="190" Y="20" Width="-15" Height="40" FontId="1">Process Complete</Text>
+			<Text X="190" Y="70" Width="-15" Height="60" FontId="0">The requested action was completed successfully. You may now close this window.</Text>
+			<Button Name="CloseButton" X="-10" Y="-20" Width="90" Height="28" TabStop="yes" FontId="0">Close</Button>
+		</Page>
+
+		<Page Name="Failure">
+			<Text X="190" Y="20" Width="-15" Height="40" FontId="1">Setup Failed</Text>
+			<Text X="190" Y="70" Width="-15" Height="60" FontId="0">Something went wrong during the process. Please check the logs and try again.</Text>
+			<Button Name="CloseButton" X="-10" Y="-20" Width="90" Height="28" TabStop="yes" FontId="0">Close</Button>
+		</Page>
+	</Window>
 </Theme>

@@ -1,6 +1,7 @@
 ﻿using Chetan_Broker.Models;
 using Chetan_Broker.Services;
 using Microsoft.Win32;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -40,6 +41,8 @@ namespace Chetan_Broker.Controls
         {
             try
             {
+                var culture = new CultureInfo("en-IN");
+
                 if (cmbParty.SelectedValue == null)
                 {
                     MessageBox.Show(
@@ -59,10 +62,11 @@ namespace Chetan_Broker.Controls
 
 
                 decimal totalBrokerage = data
-                .Select(x => ParseBrokerage(x.Brokerage))
+                .Select(x => (decimal)x.Brokerage)
                 .Sum();
 
-                txtTotalBrokerage.Text = totalBrokerage.ToString("N2");
+                txtTotalBrokerage.Text = totalBrokerage.ToString("N0", culture);
+
                 _totalBrokerage = totalBrokerage;
             }
             catch (Exception ex)
@@ -137,7 +141,7 @@ namespace Chetan_Broker.Controls
             }
         }
 
-        private static decimal ParseBrokerage(string input)
+        public static decimal ParseBrokerage(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
                 return 0;

@@ -110,13 +110,21 @@ namespace Chetan_Broker.Services
                         s.Name AS SenderName,
                         r.Name AS ReceiverName,
                         t.TransactionDate,
-                        t.Amount,
-                        t.Brokerage,
-                        t.BagQuantity As BagQuantity,
-                        t.Remarks As Remarks
+
+                        CAST(REPLACE(REPLACE(REPLACE(t.Amount, ',', ''), '/', ''), '-', '') AS REAL) AS Amount,
+                        CAST(REPLACE(REPLACE(REPLACE(t.Brokerage, ',', ''), '/', ''), '-', '') AS REAL) AS Brokerage,
+                        CAST(REPLACE(REPLACE(REPLACE(t.BagQuantity, ',', ''), '/', ''), '-', '') AS REAL) AS BagQuantity,
+
+                        t.Remarks,
+
+                        SUM(
+                            CAST(REPLACE(REPLACE(REPLACE(t.Brokerage, ',', ''), '/', ''), '-', '') AS REAL)
+                        ) OVER() AS TotalBrokerage
+
                     FROM [Transaction] t
                     JOIN Party s ON t.SenderId = s.Id
                     JOIN Party r ON t.ReceiverId = r.Id
+
                     ORDER BY t.Id DESC
                 ").ToList();
             }
@@ -172,10 +180,18 @@ namespace Chetan_Broker.Services
                             ELSE s.City
                         END AS City,
                         t.TransactionDate,
-                        t.Amount,
-                        t.Brokerage,
-                        t.BagQuantity,
-                        t.Remarks
+                        
+
+                        CAST(REPLACE(REPLACE(REPLACE(t.Amount, ',', ''), '/', ''), '-', '') AS REAL) AS Amount,
+                        CAST(REPLACE(REPLACE(REPLACE(t.Brokerage, ',', ''), '/', ''), '-', '') AS REAL) AS Brokerage,
+                        CAST(REPLACE(REPLACE(REPLACE(t.BagQuantity, ',', ''), '/', ''), '-', '') AS REAL) AS BagQuantity,
+
+                        t.Remarks,
+
+                        SUM(
+                            CAST(REPLACE(REPLACE(REPLACE(t.Brokerage, ',', ''), '/', ''), '-', '') AS REAL)
+                        ) OVER() AS TotalBrokerage
+
                     FROM [Transaction] t
                     JOIN Party s ON t.SenderId = s.Id
                     JOIN Party r ON t.ReceiverId = r.Id

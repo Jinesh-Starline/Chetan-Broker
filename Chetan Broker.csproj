@@ -12,11 +12,15 @@
 
   <ItemGroup>
     <None Remove="Data\Scripts\init.sql" />
+    <None Remove="Readme.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\appicon.ico" />
     <Content Include="Data\Scripts\init.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Readme.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

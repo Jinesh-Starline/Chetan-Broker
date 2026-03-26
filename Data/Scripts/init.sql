@@ -46,10 +46,10 @@ CREATE TABLE [Transaction] (
     SenderId INTEGER NOT NULL,
     ReceiverId INTEGER NOT NULL,
     TransactionDate TEXT NOT NULL,
-    Amount TEXT NOT NULL,
-    bagQuantity TEXT NOT NULL,
+    Amount REAL NOT NULL,
+    bagQuantity REAL NOT NULL,
     remarks TEXT,
-    Brokerage TEXT NOT NULL,
+    Brokerage REAL NOT NULL,
     FOREIGN KEY (SenderId) REFERENCES Party(Id),
     FOREIGN KEY (ReceiverId) REFERENCES Party(Id),
     CHECK (SenderId != ReceiverId)

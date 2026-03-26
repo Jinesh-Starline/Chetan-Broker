@@ -1,12 +1,14 @@
 ﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
-     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui"
+	 xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
 
 	<Package Name="Chetan Broker" Manufacturer="Chetan Broker" Version="1.0.0.0"
 			 UpgradeCode="547B5544-3111-4254-9E2A-8ED7C05F6337">
 
+		<WixVariable Id="WixUILicenseRtf" Value="$(var.Chetan_Broker.ProjectDir)Assets\License.rtf" />
+
 		<Icon Id="AppIcon" SourceFile="$(var.Chetan_Broker.ProjectDir)Assets\appicon.ico" />
 		<Property Id="ARPPRODUCTICON" Value="AppIcon" />
-
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
 		<MediaTemplate EmbedCab="yes" />
 
@@ -15,11 +17,13 @@
 
 		<Property Id="DESKTOP_SHORTCUT" Value="1" />
 		<Property Id="LAUNCH_APP" Value="1" />
-
 		<Property Id="WixShellExecTarget" Value="[#MainAppExe]" />
-		<CustomAction Id="LaunchApplication" BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)"
-					  DllEntry="WixShellExec" Impersonate="yes" />
 
+		<CustomAction Id="LaunchApplication"
+					  BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)"
+					  DllEntry="WixShellExec"
+					  Impersonate="yes" />
+		
 		<UI>
 			<Publish Dialog="InstallDirDlg" Control="Next" Event="NewDialog" Value="CustomOptionsDlg" Order="10" />
 			<Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="CustomOptionsDlg" Order="10" />
@@ -30,12 +34,9 @@
 				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="370" Height="0" />
 				<Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes" Text="{\WixUI_Font_Title}Installation Options" />
 				<Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes" Text="Choose additional installation options." />
-
 				<Control Id="DesktopShortcutCheckBox" Type="CheckBox" X="20" Y="90" Width="310" Height="17" Property="DESKTOP_SHORTCUT" CheckBoxValue="1" Text="&amp;Create a desktop shortcut" />
 				<Control Id="LaunchAppCheckBox" Type="CheckBox" X="20" Y="115" Width="310" Height="17" Property="LAUNCH_APP" CheckBoxValue="1" Text="&amp;Launch Chetan Broker after installation" />
-
 				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="370" Height="0" />
-
 				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="!(loc.WixUIBack)">
 					<Publish Event="NewDialog" Value="InstallDirDlg" />
 				</Control>
@@ -53,7 +54,7 @@
 			<ComponentGroupRef Id="AppComponents" />
 		</Feature>
 	</Package>
-	
+
 	<Fragment>
 		<StandardDirectory Id="ProgramFiles64Folder">
 			<Directory Id="INSTALLFOLDER" Name="Chetan Brokers" />
@@ -67,8 +68,8 @@
 	<Fragment>
 		<ComponentGroup Id="AppComponents" Directory="INSTALLFOLDER">
 			<Component Id="MainExeComp">
-					<File Id="MainAppExe" 
-						  Source="$(var.Chetan_Broker.TargetDir)Chetan Broker.exe">
+				<File Id="MainAppExe"
+					  Source="$(var.Chetan_Broker.TargetDir)Chetan Broker.exe">
 					<Shortcut Name="Chetan Brokers" Directory="ApplicationProgramsFolder" Advertise="yes" />
 				</File>
 				<RemoveFolder Id="RemoveStartMenu" Directory="ApplicationProgramsFolder" On="uninstall" />
@@ -79,9 +80,12 @@
 				<Shortcut Id="DesktopShortcutLink" Name="Chetan Brokers" Target="[INSTALLFOLDER]Chetan Broker.exe" WorkingDirectory="INSTALLFOLDER" Icon="AppIcon" />
 			</Component>
 
-			<Files Include="$(var.Chetan_Broker.ProjectDir)**\*.dll" />
-			<Files Include="$(var.Chetan_Broker.ProjectDir)**\*.json" />
-			<Files Include="$(var.Chetan_Broker.ProjectDir)**\*.config" />
+			<Files Include="$(var.Chetan_Broker.TargetDir)**\*.dll" />
+			<Files Include="$(var.Chetan_Broker.TargetDir)**\*.json" />
+			<Files Include="$(var.Chetan_Broker.TargetDir)**\*.config" />
+			<Files Include="$(var.Chetan_Broker.TargetDir)**\*.sql" />
+
+			<Files Include="$(var.Chetan_Broker.ProjectDir)Assets\**\*.*" />
 		</ComponentGroup>
 	</Fragment>
 </Wix>

@@ -56,9 +56,9 @@ namespace Chetan_Broker.Models
         public string? Name { get; set; }
         public string? City { get; set; }
         public string? TransactionDate { get; set; }
-        public string? Amount { get; set; }
-        public string? Brokerage { get; set; }
-        public string? BagQuantity { get; set; }
+        public double? Amount { get; set; }
+        public double? Brokerage { get; set; }
+        public double? BagQuantity { get; set; }
         public string? Remarks { get; set; }
     }
 }

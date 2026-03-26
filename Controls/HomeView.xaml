@@ -3,22 +3,95 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:oxy="http://oxyplot.org/wpf">
 
-    <Grid Margin="20">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
 
+    <Grid Margin="10">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Chart 1 -->
-        <Border Grid.Row="0" Margin="0,0,0,10" Padding="10" BorderBrush="#DDD" BorderThickness="1">
-            <oxy:PlotView Model="{Binding AmountModel}" />
-        </Border>
+        <TextBlock Grid.Row="0" Text="Brokerage Analytics" FontSize="20" FontWeight="Bold" Margin="0,0,0,10"/>
 
-        <!-- Chart 2 -->
-        <Border Grid.Row="1" Padding="10" BorderBrush="#DDD" BorderThickness="1">
-            <oxy:PlotView Grid.Row="1" Model="{Binding BrokerageModel}" />
-        </Border>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
+            <RadioButton x:Name="btnSender" Content="Sender View" Style="{StaticResource {x:Type ToggleButton}}" 
+                         Width="120" Height="35" IsChecked="True" Tag="Sender" Checked="ViewToggle_Checked"/>
+            <RadioButton x:Name="btnReceiver" Content="Receiver View" Style="{StaticResource {x:Type ToggleButton}}" 
+                         Width="120" Height="35" Margin="10,0,0,0" Tag="Receiver" Checked="ViewToggle_Checked"/>
+        </StackPanel>
 
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="#F8F9FA" CornerRadius="8" Padding="10" Margin="0,0,10,0" BorderBrush="#DEE2E6" BorderThickness="1">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel>
+                        <TextBlock FontWeight="Bold" Margin="0,0,0,5">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="Select Senders"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsChecked, ElementName=btnReceiver}" Value="True">
+                                            <Setter Property="Text" Value="Select Receivers"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <ListBox x:Name="lstParties" Height="150" SelectionMode="Multiple" Margin="0,0,0,15">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox Content="{Binding}" 
+                                              IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" 
+                                              IsHitTestVisible="False"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <TextBlock Text="Select Months" FontWeight="Bold" Margin="0,0,0,5"/>
+                        <ListBox x:Name="lstMonths" Height="150" SelectionMode="Multiple" Margin="0,0,0,15">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox Content="{Binding}" 
+                                              IsChecked="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" 
+                                              IsHitTestVisible="False"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <Button Content="Apply Filters" Height="35" Background="#007BFF" Foreground="White" FontWeight="Bold" Click="ApplyFilter_Click"/>
+                        <Button Content="Reset All" Margin="0,5,0,0" Height="30" Background="Transparent" Click="ResetFilter_Click"/>
+                    </StackPanel>
+                </ScrollViewer>
+            </Border>
+
+            <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="15" BorderBrush="#DEE2E6" BorderThickness="1">
+                <Grid>
+                    <oxy:PlotView Model="{Binding BrokeragePieModel}" 
+                                  Visibility="{Binding IsChecked, ElementName=btnSender, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                    <oxy:PlotView Model="{Binding ReceiverPieModel}" 
+                                  Visibility="{Binding IsChecked, ElementName=btnReceiver, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="3" Margin="0,10,0,0" Padding="15" Background="#E9ECEF" CornerRadius="8">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Total Brokerage: " FontSize="16" VerticalAlignment="Center"/>
+                <TextBlock x:Name="txtDatabaseTotal" Text="₹ 0.00" FontSize="18" FontWeight="Bold" Foreground="#28A745" Margin="10,0,30,0"/>
+                <Rectangle Width="1" Fill="#CCC" Height="20" Margin="0,0,30,0"/>
+                <TextBlock Text="Filtered Total: " FontSize="16" VerticalAlignment="Center"/>
+                <TextBlock x:Name="txtTotalBrokerage" Text="₹ 0.00" FontSize="18" FontWeight="Bold" Foreground="#28A745" Margin="10,0,0,0"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>

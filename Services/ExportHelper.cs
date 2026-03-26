@@ -1,11 +1,12 @@
 ﻿using Chetan_Broker.Models;
+using iText.IO.Font;
 using iText.Kernel.Colors;
+using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
-using iText.Kernel.Font;
-using iText.IO.Font;
+using System.Globalization;
 using System.Windows;
 using TextAlignment = iText.Layout.Properties.TextAlignment;
 
@@ -14,15 +15,13 @@ namespace Chetan_Broker.Services
     public static class ExportHelper
     {
 
-        public static void ExportToPdf(
-     List<ReportDto> data,
-     string partyName,
-     string filePath,
-     decimal totalBrokerage,
-     BrokerAccount broker)
+        public static void ExportToPdf(List<ReportDto> data,string partyName,string filePath,decimal totalBrokerage,BrokerAccount broker)
         {
             try
             {
+
+                var culture = new CultureInfo("en-IN");
+
                 using var writer = new PdfWriter(filePath);
                 using var pdf = new PdfDocument(writer);
 
@@ -121,16 +120,13 @@ namespace Chetan_Broker.Services
                     string name = item.Name ?? "--";
                     string city = string.IsNullOrWhiteSpace(item.City) ? "--" : item.City;
 
-                    // 🔥 Multi-line Amount
-                    string amount = string.Join("\n",
-                        (item.Amount ?? ""));
 
                     // 🔥 Bag (Remarks + Quantity)
                     Paragraph bagText;
 
                     if (string.IsNullOrWhiteSpace(item.Remarks) || item.Remarks == "--")
                     {
-                        bagText = new Paragraph(item.BagQuantity.ToString())
+                        bagText = new Paragraph(($"{Convert.ToDouble(item.BagQuantity ?? 0).ToString("N0", culture)}"))
                             .SetMargin(0).SetPadding(0)
                             .SetTextAlignment(TextAlignment.CENTER);
                     }
@@ -139,7 +135,7 @@ namespace Chetan_Broker.Services
                         bagText = new Paragraph()
                             .Add(new Text(item.Remarks))
                             .Add("\n")
-                            .Add(new Text(item.BagQuantity.ToString()))
+                            .Add(new Text(($"{Convert.ToDouble(item.BagQuantity ?? 0).ToString("N0", culture)}")))
                             .SetMargin(0).SetPadding(0)
                             .SetTextAlignment(TextAlignment.CENTER);
                     }
@@ -151,8 +147,8 @@ namespace Chetan_Broker.Services
                         .Add(bagText)
                         .SetPadding(0));
 
-                    table.AddCell(DataCell(amount));
-                    table.AddCell(DataCell(item.Brokerage ?? "--"));
+                    table.AddCell(DataCell($"{Convert.ToDouble(item.Amount ?? 0).ToString("N0", culture)}/-"));
+                    table.AddCell(DataCell($"{Convert.ToDouble(item.Brokerage ?? 0).ToString("N0", culture)}/-."));
                 }
 
                 document.Add(table);
